@@ -46,7 +46,11 @@ export class OrdersGridComponent implements OnInit{
     {
       field: 'openPrice',
       aggFunc: 'avg',
-      headerName: 'Open Price'
+      headerName: 'Open Price',
+       valueFormatter: params => {
+        if (params.value == null) return '';
+        return Number(params.value).toFixed(2);
+  }
     },
     {
       field: 'swap',
