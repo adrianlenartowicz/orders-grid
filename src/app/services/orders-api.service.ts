@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Order } from '../models/order.model';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
+
+interface OrdersResponse {
+  data: Order[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +16,6 @@ export class OrdersApiService {
   constructor(private http: HttpClient) {}
 
   getOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(this.url)
+    return this.http.get<OrdersResponse>(this.url).pipe(map(response => response.data))
   }
 }
