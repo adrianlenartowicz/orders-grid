@@ -1,7 +1,6 @@
-<h1>Orders</h1>
-
-@for (order of orders; track order.id) {
-  <div>
-    {{order.symbol}}
-  </div>
-}
+<ag-grid-angular
+  class="ag-theme-alpine"
+  style="height: 500px; width: 100%;"
+  [rowData]="orders()"
+  [columnDefs]="colDef">
+</ag-grid-angular>
