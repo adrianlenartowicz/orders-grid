@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { OrdersApiService } from './services/orders-api.service';
 import { Order } from './models/order.model';
 import { AgGridAngular } from 'ag-grid-angular'
@@ -36,7 +37,11 @@ export class App implements OnInit {
     },
     {
       field: 'openTime',
-      headerName: 'Open Time'
+      headerName: 'Open Time',
+      valueFormatter: params => {
+        if (params.node && params.node.group) return '';
+        return formatDate(params.value, 'dd.MM.yyyy HH:mm:ss','en');
+      }
     },
     {
       field: 'openPrice',
