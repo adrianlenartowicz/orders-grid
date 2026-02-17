@@ -2,5 +2,7 @@
   class="ag-theme-alpine"
   style="height: 500px; width: 100%;"
   [rowData]="orders()"
-  [columnDefs]="colDef">
+  [columnDefs]="colDef"
+  [autoGroupColumnDef]="autoGroupColumnDef"
+  [suppressAggFuncInHeader]="true">
 </ag-grid-angular>

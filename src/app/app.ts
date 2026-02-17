@@ -22,22 +22,46 @@ export class App implements OnInit {
       hide: true
     },
     {
-      field: 'openPrice',
-      aggFunc: 'avg'
+      field: 'id',
+      headerName: 'Order ID'
     },
     {
-      field: 'swap',
-      aggFunc: 'sum'
+      field: 'side',
+      headerName: 'Side'
     },
     {
       field: 'size',
-      aggFunc: 'sum'
-    }
-  ]
+      aggFunc: 'sum',
+      headerName: 'Size'
+    },
+    {
+      field: 'openTime',
+      headerName: 'Open Time'
+    },
+    {
+      field: 'openPrice',
+      aggFunc: 'avg',
+      headerName: 'Open Price'
+    },
+    {
+      field: 'swap',
+      aggFunc: 'sum',
+      headerName: 'Swap'
+    },
+    {
+      headerName: 'Profit'
+    },
+  ];
+
+  autoGroupColumnDef = {
+    headerName: 'Symbol',
+  };
+  
 
   ngOnInit() {
     this.api.getOrders().subscribe(data => {
       this.orders.set(data);
+      console.log(this.orders())
     })
   }
 }
