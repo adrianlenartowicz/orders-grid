@@ -98,10 +98,18 @@ export class OrdersGridComponent implements OnInit{
       width: 70,
       sortable: false,
       filter: false,
-      cellRenderer: () => 'close',
       cellStyle: {
-        cursor: 'pointer',
-        textAlign: 'center',
+        cursor: 'pointer'
+      },
+      cellRenderer: () => {
+        const el = document.createElement('div');
+        el.style.width = '100%';
+        el.style.height = '100%';
+        el.style.display = 'flex';
+        el.style.alignItems = 'center';
+        el.style.justifyContent = 'center';
+        el.innerHTML = '<span class="material-icons">close</span>';
+        return el;
       },
       onCellClicked: params => this.closeRow(params)
     }
