@@ -1,10 +1,11 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { formatDate } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { OrdersApiService } from '../../services/orders/orders-api.service';
 import { Order } from '../../models/order.model';
 import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
+import type { ColDef, GridApi, GridReadyEvent, CellClickedEvent, IRowNode } from 'ag-grid-community';
 import { QuotesService } from '../../services/quotes/quotes.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class OrdersGridComponent implements OnInit{
   private ordersService = inject(OrdersApiService);
   private quotesService = inject(QuotesService);
   private destroyRef = inject(DestroyRef);
+  private snackBar = inject(MatSnackBar);
 
   orders = signal<Order[]>([]);
   quotes = signal<Record<string, number>>({});
@@ -90,6 +92,19 @@ export class OrdersGridComponent implements OnInit{
         return Number(params.value ?? 0).toFixed(4);
       }
     },
+    {
+      headerName: '',
+      colId: 'close',
+      width: 70,
+      sortable: false,
+      filter: false,
+      cellRenderer: () => 'close',
+      cellStyle: {
+        cursor: 'pointer',
+        textAlign: 'center',
+      },
+      onCellClicked: params => this.closeRow(params)
+    }
   ];
 
   autoGroupColumnDef = {
@@ -146,4 +161,36 @@ export class OrdersGridComponent implements OnInit{
 
     return (order.openPrice - priceBid) * multiplier * sideMultiplier / 100;
   }
+
+  private closeRow(params: CellClickedEvent): void {
+    const ids = this.getIdsToClose(params);
+
+    if (!ids.length) return;
+
+    this.orders.update(list =>
+      list.filter(order => !ids.includes(order.id))
+    );
+
+    this.showCloseMessage(ids);
+  }
+
+  private getIdsToClose(params: CellClickedEvent<Order>): number[] {
+
+    if (params.node.group) {
+      return (params.node.allLeafChildren ?? [])
+        .map((node) => node.data?.id)
+        .filter((id): id is number => id != null);
+    }
+
+    return [params.data!.id];
+  }
+
+  private showCloseMessage(ids: number[]): void {
+    this.snackBar.open(
+      `Zamknięto zlecenie nr ${ids.join(', ')}`,
+      'OK',
+      { duration: 3000 }
+    );
+  }
+
 }
