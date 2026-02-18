@@ -87,7 +87,7 @@ export class OrdersGridComponent implements OnInit{
         return Number.isFinite(profit) ? profit : 0;
       },
       valueFormatter: params => {
-        return Number(params.value ?? 0).toFixed(2);
+        return Number(params.value ?? 0).toFixed(4);
       }
     },
   ];
