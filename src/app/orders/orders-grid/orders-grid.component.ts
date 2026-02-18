@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { formatDate } from '@angular/common';
 import { OrdersApiService } from '../../services/orders/orders-api.service';
 import { Order } from '../../models/order.model';
@@ -15,6 +16,7 @@ import { QuotesService } from '../../services/quotes/quotes.service';
 export class OrdersGridComponent implements OnInit{
   private ordersService = inject(OrdersApiService);
   private quotesService = inject(QuotesService);
+  private destroyRef = inject(DestroyRef);
 
   orders = signal<Order[]>([]);
   quotes = signal<Record<string, number>>({});
@@ -95,25 +97,29 @@ export class OrdersGridComponent implements OnInit{
   };
   
   ngOnInit() {
-    this.ordersService.getOrders().subscribe(data => {
-      this.orders.set(data);
-      const symbols = [...new Set(data.map(o => o.symbol))];
-      this.quotesService.subscribeSymbols(symbols);
+    this.ordersService.getOrders()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        this.orders.set(data);
+        const symbols = [...new Set(data.map(o => o.symbol))];
+        this.quotesService.subscribeSymbols(symbols);
     });
 
-    this.quotesService.quotes$.subscribe(quotes => {
-      const updated = { ...this.quotes() };
-      for (const q of quotes) {
-        updated[q.s] = q.b;
-      }
-      this.quotes.set(updated);
+    this.quotesService.quotes$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(quotes => {
+        const updated = { ...this.quotes() };
+        for (const q of quotes) {
+          updated[q.s] = q.b;
+        }
+        this.quotes.set(updated);
 
-      this.gridApi?.refreshCells({
-        columns: ['profit'],
-        force: true
-      });
+        this.gridApi?.refreshCells({
+          columns: ['profit'],
+          force: true
+        });
 
-      this.gridApi?.refreshClientSideRowModel('aggregate');
+        this.gridApi?.refreshClientSideRowModel('aggregate');
     });
   }
 
