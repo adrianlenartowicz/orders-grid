@@ -71,13 +71,13 @@ export class OrdersGridComponent implements OnInit{
     },
     {
       headerName: 'Profit',
+      aggFunc: 'sum',
       colId: 'profit',
       valueGetter: params => {
-        if (params.node?.group) {
-          return 0;
-        }
 
-         return this.calculateProfit(params.data);
+      const profit = this.calculateProfit(params.data);
+
+      return Number.isFinite(profit) ? profit : 0;
       },
       valueFormatter: params => {
         return Number(params.value ?? 0).toFixed(2);
@@ -107,10 +107,13 @@ export class OrdersGridComponent implements OnInit{
         updated[q.s] = q.b;
       }
       this.quotes.set(updated);
-        this.gridApi?.refreshCells({
+      
+      this.gridApi?.refreshCells({
         columns: ['profit'],
         force: true
       });
+
+      this.gridApi?.refreshClientSideRowModel('aggregate');
     });
   }
 
@@ -130,7 +133,7 @@ export class OrdersGridComponent implements OnInit{
   calculateProfit(order: Order): number {
     const priceBid = this.quotes()[order.symbol]
 
-    if (priceBid === null) return 0;
+    if (priceBid == null) return 0;
 
     const multiplier = this.getMultiplier(order.symbol);
     const sideMultiplier = order.side === 'BUY' ? 1 : -1;
