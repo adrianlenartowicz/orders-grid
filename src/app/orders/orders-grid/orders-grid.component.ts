@@ -4,6 +4,7 @@ import { OrdersApiService } from '../../services/orders/orders-api.service';
 import { Order } from '../../models/order.model';
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community';
+import { QuotesService } from '../../services/quotes/quotes.service';
 
 @Component({
   selector: 'app-order-grid',
@@ -12,9 +13,11 @@ import type { ColDef } from 'ag-grid-community';
   styleUrl: './orders-grid.component.scss',
 })
 export class OrdersGridComponent implements OnInit{
-  private api = inject(OrdersApiService);
+  private ordersService = inject(OrdersApiService);
+  private quotesService = inject(QuotesService);
 
   orders = signal<Order[]>([]);
+  quotes = signal<Record<string, number>>({});
 
   colDef: ColDef[] = [
     {
@@ -68,9 +71,18 @@ export class OrdersGridComponent implements OnInit{
   
 
   ngOnInit() {
-    this.api.getOrders().subscribe(data => {
+    this.ordersService.getOrders().subscribe(data => {
       this.orders.set(data);
-      console.log(this.orders())
-    })
+      const symbols = [...new Set(data.map(o => o.symbol))];
+      this.quotesService.subscribeSymbols(symbols);
+    });
+
+    this.quotesService.quotes$.subscribe(quotes => {
+      const updated = { ...this.quotes() };
+      for (const q of quotes) {
+        updated[q.s] = q.b;
+      }
+      this.quotes.set(updated);
+  });
   }
 }
