@@ -19,6 +19,8 @@ export class OrdersGridComponent implements OnInit{
   orders = signal<Order[]>([]);
   quotes = signal<Record<string, number>>({});
 
+  gridApi: any;
+
   colDef: ColDef[] = [
     {
       field: 'symbol',
@@ -53,7 +55,7 @@ export class OrdersGridComponent implements OnInit{
        valueFormatter: params => {
         if (params.value == null) return '';
         return Number(params.value).toFixed(2);
-  }
+      } 
     },
     {
       field: 'swap',
@@ -61,13 +63,28 @@ export class OrdersGridComponent implements OnInit{
       headerName: 'Swap'
     },
     {
-      headerName: 'Profit'
+      headerName: 'Profit',
+      colId: 'profit',
+      valueGetter: params => {
+        if (params.node?.group) {
+          return 0;
+        }
+
+         return this.calculateProfit(params.data);
+      },
+      valueFormatter: params => {
+        return Number(params.value ?? 0).toFixed(2);
+      }
     },
   ];
 
   autoGroupColumnDef = {
     headerName: 'Symbol',
   };
+
+  onGridReady(params: any) {
+    this.gridApi = params.api;
+  }
   
 
   ngOnInit() {
@@ -83,6 +100,34 @@ export class OrdersGridComponent implements OnInit{
         updated[q.s] = q.b;
       }
       this.quotes.set(updated);
-  });
+        this.gridApi?.refreshCells({
+        columns: ['profit'],
+        force: true
+      });
+    });
+  }
+
+  private getMultiplier(symbol: string): number {
+    switch (symbol) {
+      case 'TTWO.US':
+        return 10 ** 1;
+      case 'BTCUSD':
+        return 10 ** 2;
+      case 'ETHUSD':
+        return 10 ** 3;
+      default:
+        return 1;
+    }
+  }
+
+  calculateProfit(order: Order): number {
+    const priceBid = this.quotes()[order.symbol]
+
+    if (priceBid === null) return 0;
+
+    const multiplier = this.getMultiplier(order.symbol);
+    const sideMultiplier = order.side === 'BUY' ? 1 : -1;
+
+    return (order.openPrice - priceBid) * multiplier * sideMultiplier / 100;
   }
 }

@@ -4,5 +4,6 @@
   [rowData]="orders()"
   [columnDefs]="colDef"
   [autoGroupColumnDef]="autoGroupColumnDef"
-  [suppressAggFuncInHeader]="true">
+  [suppressAggFuncInHeader]="true"
+  (gridReady)="onGridReady($event)">
 </ag-grid-angular>
