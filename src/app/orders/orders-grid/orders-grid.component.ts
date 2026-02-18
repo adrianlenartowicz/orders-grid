@@ -125,7 +125,7 @@ export class OrdersGridComponent implements OnInit{
 
   private getMultiplier(symbol: string): number {
     switch (symbol) {
-      case 'TTWO.US':
+      case 'AUDCHF':
         return 10 ** 1;
       case 'BTCUSD':
         return 10 ** 2;
