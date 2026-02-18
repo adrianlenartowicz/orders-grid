@@ -183,6 +183,11 @@ export class OrdersGridComponent implements OnInit{
 
         this.gridApi?.refreshClientSideRowModel('aggregate');
     });
+
+    this.destroyRef.onDestroy(() => {
+      const symbols = [...new Set(this.orders().map(o => o.symbol))];
+      this.quotesService.unsubscribeSymbols(symbols);
+    });
   }
 
   private getMultiplier(symbol: string): number {

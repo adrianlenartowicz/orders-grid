@@ -23,4 +23,11 @@ export class QuotesService {
       d: symbols
     })
   }
+
+  unsubscribeSymbols(symbols: string[]) {
+    this.socket$.next({
+      p: '/subscribe/removelist',
+      d: symbols
+    });
+  }
 }
