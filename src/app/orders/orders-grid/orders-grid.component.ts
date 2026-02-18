@@ -4,7 +4,7 @@ import { formatDate } from '@angular/common';
 import { OrdersApiService } from '../../services/orders/orders-api.service';
 import { Order } from '../../models/order.model';
 import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, GridApi } from 'ag-grid-community';
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { QuotesService } from '../../services/quotes/quotes.service';
 
 @Component({
@@ -21,9 +21,9 @@ export class OrdersGridComponent implements OnInit{
   orders = signal<Order[]>([]);
   quotes = signal<Record<string, number>>({});
 
-  gridApi!: GridApi;
+  gridApi?: GridApi;
   
-  onGridReady(params: any) {
+  onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api;
   }
 
