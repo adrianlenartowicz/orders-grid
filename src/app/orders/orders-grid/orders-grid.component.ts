@@ -74,10 +74,11 @@ export class OrdersGridComponent implements OnInit{
       aggFunc: 'sum',
       colId: 'profit',
       valueGetter: params => {
+        if (params.node?.group) return undefined;
 
-      const profit = this.calculateProfit(params.data);
+        const profit = this.calculateProfit(params.data);
 
-      return Number.isFinite(profit) ? profit : 0;
+        return Number.isFinite(profit) ? profit : 0;
       },
       valueFormatter: params => {
         return Number(params.value ?? 0).toFixed(2);
@@ -107,7 +108,7 @@ export class OrdersGridComponent implements OnInit{
         updated[q.s] = q.b;
       }
       this.quotes.set(updated);
-      
+
       this.gridApi?.refreshCells({
         columns: ['profit'],
         force: true
