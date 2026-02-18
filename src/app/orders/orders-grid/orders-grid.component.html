@@ -1,5 +1,5 @@
 <ag-grid-angular
-  class="ag-theme-alpine"
+  [theme]="isDark ? darkTheme : lightTheme"
   style="height: 500px; width: 100%;"
   [rowData]="orders()"
   [columnDefs]="colDef"

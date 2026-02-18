@@ -5,7 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { OrdersApiService } from '../../services/orders/orders-api.service';
 import { Order } from '../../models/order.model';
 import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent, CellClickedEvent, IRowNode } from 'ag-grid-community';
+import type { ColDef, GridApi, GridReadyEvent, CellClickedEvent } from 'ag-grid-community';
+import { themeQuartz } from 'ag-grid-community';
 import { QuotesService } from '../../services/quotes/quotes.service';
 
 @Component({
@@ -90,6 +91,16 @@ export class OrdersGridComponent implements OnInit{
       },
       valueFormatter: params => {
         return Number(params.value ?? 0).toFixed(4);
+      },
+      cellStyle: params => {
+        const value = Number(params.value);
+        if (value > 0) {
+          return { color: 'rgb(60, 193, 149)' };
+        }
+        if (value < 0) {
+          return { color: 'rgb(249, 76, 76)' };
+        }
+        return null;
       }
     },
     {
@@ -118,6 +129,22 @@ export class OrdersGridComponent implements OnInit{
   autoGroupColumnDef = {
     headerName: 'Symbol',
   };
+
+  lightTheme = themeQuartz.withParams({
+    backgroundColor: 'rgb(233, 237, 241)',
+    foregroundColor: 'rgb(14, 15, 26)', 
+    oddRowBackgroundColor: 'rgb(220, 225, 229)',
+    rowHoverColor: 'rgb(201, 209, 216)',
+  });
+
+  darkTheme = themeQuartz.withParams({
+    backgroundColor: 'rgb(42, 56, 71)',
+    foregroundColor: 'rgb(198, 210, 219)',
+    oddRowBackgroundColor: 'rgba(14, 15, 26, .25)',
+    rowHoverColor: 'rgba(53, 71, 89, .5)',
+  });
+
+  isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   
   ngOnInit() {
     this.ordersService.getOrders()
