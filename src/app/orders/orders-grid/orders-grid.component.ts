@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { formatDate } from '@angular/common';
-import { OrdersApiService } from '../../services/orders-api.service';
+import { OrdersApiService } from '../../services/orders/orders-api.service';
 import { Order } from '../../models/order.model';
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community';
