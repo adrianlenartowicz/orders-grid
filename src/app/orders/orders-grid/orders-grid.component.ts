@@ -77,7 +77,7 @@ export class OrdersGridComponent implements OnInit{
     },
     {
       headerName: 'Profit',
-      aggFunc: 'sum',
+      aggFunc: 'avg',
       colId: 'profit',
       valueGetter: params => {
         if (params.node?.group) return undefined;
