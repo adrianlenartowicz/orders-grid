@@ -60,7 +60,14 @@ export class OrdersGridComponent implements OnInit{
     {
       field: 'swap',
       aggFunc: 'sum',
-      headerName: 'Swap'
+      headerName: 'Swap',
+      valueFormatter: params => {
+        if (params.value == null) return '';
+        if (Math.abs(Number(params.value)) < 0.00005) {
+          return '0';
+        };
+        return Number(params.value).toFixed(4);
+      } 
     },
     {
       headerName: 'Profit',
