@@ -4,3 +4,6 @@ The provided dataset and websocket stream contain BTCUSD, ETHUSD and AUDCHF (TTW
 To keep the application consistent with the actual data, AUDCHF uses multiplier 10¹, matching the intent of the specification.
 
 Any unknown symbols fall back to multiplier = 1.
+
+Additionally, the order payload does not contain a closePrice field.
+For profit calculation, openPrice is used as the reference value.
