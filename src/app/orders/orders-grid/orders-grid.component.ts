@@ -23,6 +23,7 @@ export class OrdersGridComponent implements OnInit{
 
   orders = signal<Order[]>([]);
   quotes = signal<Record<string, number>>({});
+  isDark = signal(window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   gridApi?: GridApi;
   
@@ -130,23 +131,34 @@ export class OrdersGridComponent implements OnInit{
     headerName: 'Symbol',
   };
 
-  lightTheme = themeQuartz.withParams({
-    backgroundColor: 'rgb(233, 237, 241)',
-    foregroundColor: 'rgb(14, 15, 26)', 
-    oddRowBackgroundColor: 'rgb(220, 225, 229)',
-    rowHoverColor: 'rgb(201, 209, 216)',
+  lightTheme = themeQuartz
+    .withParams({
+      backgroundColor: 'rgb(233, 237, 241)',
+      foregroundColor: 'rgb(14, 15, 26)',
+      oddRowBackgroundColor: 'rgb(220, 225, 229)',
+      rowHoverColor: 'rgb(201, 209, 216)',
   });
 
-  darkTheme = themeQuartz.withParams({
-    backgroundColor: 'rgb(42, 56, 71)',
-    foregroundColor: 'rgb(198, 210, 219)',
-    oddRowBackgroundColor: 'rgba(14, 15, 26, .25)',
-    rowHoverColor: 'rgba(53, 71, 89, .5)',
+  darkTheme = themeQuartz
+    .withParams({
+      backgroundColor: 'rgb(42, 56, 71)',
+      foregroundColor: 'rgb(198, 210, 219)',
+      oddRowBackgroundColor: 'rgba(14, 15, 26, .25)',
+      rowHoverColor: 'rgba(53, 71, 89, .5)',
   });
-
-  isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   
   ngOnInit() {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const listener = (e: MediaQueryListEvent) =>
+      this.isDark.set(e.matches);
+
+    media.addEventListener('change', listener);
+
+    this.destroyRef.onDestroy(() => {
+      media.removeEventListener('change', listener);
+    });
+
     this.ordersService.getOrders()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
